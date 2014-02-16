@@ -4,8 +4,10 @@ body {
 
 #canvas-background {
   display: block;
-  width: 800px;
-  height: 600px;
-  background: #ccc;
   margin: 100px auto;
+}
+
+#canvas-super-me {
+  display: block;
+  margin: -500px auto;
 }
