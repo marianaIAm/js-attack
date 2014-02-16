@@ -1,5 +1,5 @@
 body {
-  background: #fff; }
+  background: #000; }
 
 #canvas-background {
   display: block;
@@ -7,4 +7,4 @@ body {
 
 #canvas-super-me {
   display: block;
-  margin: -500px auto; }
+  margin: -700px auto; }
