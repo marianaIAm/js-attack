@@ -1,0 +1,1 @@
+var canvasBackground=document.getElementById("canvas-background"),contextBackground=canvasBackground.getContext("2d");
