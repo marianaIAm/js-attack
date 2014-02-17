@@ -127,8 +127,6 @@ SuperMe.prototype.drawBullets = function() {
 SuperMe.prototype.checkShooting = function() {
   if (this.isSpaceBar && !this.isShooting) {
     this.isShooting = true;
-    console.log(this.handX);
-    console.log(this.handY);
     this.bullets[this.currentBullet].fire(this.handX, this.handY);
     this.currentBullet++;
     if (this.currentBullet >= this.bullets.length) this.currentBullet = 0;
@@ -153,12 +151,16 @@ function Bullet() {
 Bullet.prototype.draw = function() {
   this.drawX += 6;
   contextSuperMe.drawImage(imgSprite, this.sourceX, this.sourceY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
-  if (this.drawX > gameWidth) this.drawX = -10;
+  if (this.drawX > gameWidth) this.recycle();
 };
 
 Bullet.prototype.fire = function(startX, startY) {
   this.drawX = startX;
   this.drawY = startY;
+};
+
+Bullet.prototype.recycle = function() {
+  this.drawX = -10;
 };
 
 function BadGuy() {
