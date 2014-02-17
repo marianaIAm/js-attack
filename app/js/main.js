@@ -1,6 +1,3 @@
-var superMe = new SuperMe();
-var canvasSuperMe = document.getElementById("super-me");
-var contextSuperMe = canvasSuperMe.getContext("2d");
 
 var canvasBackground = document.getElementById("canvas-background");
 var contextBackground = canvasBackground.getContext("2d");
@@ -9,6 +6,10 @@ var canvasBadGuys = document.getElementById("bad-guys");
 var contextBadGuys = canvasBadGuys.getContext("2d");
 var badGuys = [];
 var spawnAmount = 5;
+
+var superMe = new SuperMe();
+var canvasSuperMe = document.getElementById("super-me");
+var contextSuperMe = canvasSuperMe.getContext("2d");
 
 var gameWidth = canvasBackground.width;
 var gameHeight = canvasBackground.height;
@@ -43,7 +44,7 @@ function init() {
 function loop() {
   if (isPlaying) {
     superMe.draw();
-    drawAllBadGuys();
+    drawBadGuys();
     requestAnimFrame(loop);
   }
 }
@@ -57,17 +58,16 @@ function stopLoop() {
   isPlaying = false;
 }
 
-function drawAllBadGuys() {
-  clearContextBadGuys();
-  for (var i = 0; i < badGuys.length; i++) {
-    badGuys[i].draw();
-  }
+function drawBackground() {
+  var sourceX = 0;
+  var sourceY = 0;
+  var drawX = 0;
+  var drawY = 0;
+  contextBackground.drawImage(imgSprite, sourceX, sourceY, gameWidth, gameHeight, drawX, drawY, gameWidth, gameHeight);
 }
 
-function spawnBadGuys(num) {
-  for (var i = 0; i < num; i++) {
-    badGuys[badGuys.length] = new BadGuy();
-  }
+function clearContextBackground() {
+  contextBackground.clearRect(0, 0, gameWidth, gameHeight);
 }
 
 function SuperMe() {
@@ -78,19 +78,32 @@ function SuperMe() {
   this.speed = 2;
   this.drawX = 0;
   this.drawY = 0;
+  this.handX = this.drawX + 146;
+  this.handY = this.drawY + 30;
   this.isUpKey = false;
   this.isRightKey = false;
   this.isDownKey = false;
   this.isLeftKey = false;
+  this.isSpaceBar = false;
+  this.isShooting = false;
+  this.bullets = [];
+  this.currentBullet = 0;
+  for (var i = 0; i < 20; i++) {
+    this.bullets[this.bullets.length] = new Bullet();
+  }
 }
 
 SuperMe.prototype.draw = function() {
   clearContextSuperMe();
-  this.checkKeys();
+  this.checkDirection();
+  this.handX = this.drawX + 146;
+  this.handY = this.drawY + 30;
+  this.checkShooting();
+  this.drawBullets();
   contextSuperMe.drawImage(imgSprite, this.sourceX, this.sourceY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
 };
 
-SuperMe.prototype.checkKeys = function () {
+SuperMe.prototype.checkDirection = function () {
   if (this.isUpKey) {
     this.drawY -= this.speed;
   }
@@ -103,11 +116,50 @@ SuperMe.prototype.checkKeys = function () {
   if (this.isLeftKey) {
     this.drawX -= this.speed;
   }
-}
+};
+
+SuperMe.prototype.drawBullets = function() {
+  for (var i = 0; i < this.bullets.length; i++) {
+    if (this.bullets[i].drawX >= 0) this.bullets[i].draw();
+  }
+};
+
+SuperMe.prototype.checkShooting = function() {
+  if (this.isSpaceBar && !this.isShooting) {
+    this.isShooting = true;
+    console.log(this.handX);
+    console.log(this.handY);
+    this.bullets[this.currentBullet].fire(this.handX, this.handY);
+    this.currentBullet++;
+    if (this.currentBullet >= this.bullets.length) this.currentBullet = 0;
+  } else if (!this.isSpaceBar) {
+    this.isShooting = false;
+  }
+};
 
 function clearContextSuperMe() {
   contextSuperMe.clearRect(0, 0, gameWidth, gameHeight);
 }
+
+function Bullet() {
+  this.sourceX = 146;
+  this.sourceY = 601;
+  this.width = 62;
+  this.height = 60;
+  this.drawX = -10;
+  this.drawY = 0;
+}
+
+Bullet.prototype.draw = function() {
+  this.drawX += 6;
+  contextSuperMe.drawImage(imgSprite, this.sourceX, this.sourceY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
+  if (this.drawX > gameWidth) this.drawX = -10;
+};
+
+Bullet.prototype.fire = function(startX, startY) {
+  this.drawX = startX;
+  this.drawY = startY;
+};
 
 function BadGuy() {
   this.sourceX = 0;
@@ -140,16 +192,17 @@ function clearContextBadGuys() {
   contextBadGuys.clearRect(0, 0, gameWidth, gameHeight);
 }
 
-function drawBackground() {
-  var sourceX = 0;
-  var sourceY = 0;
-  var drawX = 0;
-  var drawY = 0;
-  contextBackground.drawImage(imgSprite, sourceX, sourceY, gameWidth, gameHeight, drawX, drawY, gameWidth, gameHeight);
+function drawBadGuys() {
+  clearContextBadGuys();
+  for (var i = 0; i < badGuys.length; i++) {
+    badGuys[i].draw();
+  }
 }
 
-function clearContextBackground() {
-  contextBackground.clearRect(0, 0, gameWidth, gameHeight);
+function spawnBadGuys(num) {
+  for (var i = 0; i < num; i++) {
+    badGuys[badGuys.length] = new BadGuy();
+  }
 }
 
 function checkKeyDown(e) {
@@ -157,7 +210,8 @@ function checkKeyDown(e) {
   var up = 38,    wKey = 87,
       right = 39, dKey = 68,
       down = 40,  sKey = 83,
-      left = 37,  aKey = 65;
+      left = 37,  aKey = 65,
+      shoot = 32;
   if (key === up || key === wKey) {
     superMe.isUpKey = true;
     e.preventDefault();
@@ -174,6 +228,10 @@ function checkKeyDown(e) {
     superMe.isLeftKey = true;
     e.preventDefault();
   }
+  if (key === shoot) {
+    superMe.isSpaceBar = true;
+    e.preventDefault();
+  }
 }
 
 function checkKeyUp(e) {
@@ -181,7 +239,8 @@ function checkKeyUp(e) {
   var up = 38,    wKey = 87,
       right = 39, dKey = 68,
       down = 40,  sKey = 83,
-      left = 37,  aKey = 65;
+      left = 37,  aKey = 65,
+      shoot = 32;
   if (key === up || key === wKey) {
     superMe.isUpKey = false;
     e.preventDefault();
@@ -196,6 +255,10 @@ function checkKeyUp(e) {
   }
   if (key === left || key === aKey) {
     superMe.isLeftKey = false;
+    e.preventDefault();
+  }
+  if (key === shoot) {
+    superMe.isSpaceBar = false;
     e.preventDefault();
   }
 }
