@@ -106,7 +106,7 @@ function drawBackground() {
 }
 
 function updateScoreboard() {
-  var drawX = 700;
+  var drawX = 1100;
   var drawY = 25;
   contextScoreboard.clearRect(0, 0, gameWidth, gameHeight);
   contextScoreboard.fillText("Score: " + superMe.score, drawX, drawY);
@@ -138,6 +138,8 @@ function SuperMe() {
 
 SuperMe.prototype.draw = function() {
   clearContextSuperMe();
+  this.drawX = Math.max(0, Math.min(this.drawX, gameWidth - this.width));
+  this.drawY = Math.max(0, Math.min(this.drawY, gameHeight - this.height));
   this.checkDirection();
   this.handX = this.drawX + 146;
   this.handY = this.drawY + 30;
@@ -260,7 +262,7 @@ function BadGuy() {
   this.width = 40;
   this.height = 42;
   this.speed = 2;
-  this.drawX = Math.floor(Math.random() * 800) + gameWidth;
+  this.drawX = Math.floor(Math.random() * 1200) + gameWidth;
   this.drawY = Math.floor(Math.random() * (gameHeight - 150));
   this.pointValue = 5;
 }
@@ -278,7 +280,7 @@ BadGuy.prototype.checkEscaped = function() {
 };
 
 BadGuy.prototype.recycleBadGuy = function() {
-  this.drawX = Math.floor(Math.random() * 800) + gameWidth;
+  this.drawX = Math.floor(Math.random() * 1200) + gameWidth;
   this.drawY = Math.floor(Math.random() * (gameHeight - 150));
 };
 
