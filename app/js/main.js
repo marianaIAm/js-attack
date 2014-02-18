@@ -11,8 +11,13 @@ var superMe = new SuperMe();
 var canvasSuperMe = document.getElementById("super-me");
 var contextSuperMe = canvasSuperMe.getContext("2d");
 
+// (xLeft, xRight, yTop = yTopMenu - yButtonTop, yBottom = yTopMenu - yButtonBottom)
+var playButton = new Button(259, 545, 292, 428);
+
 var gameWidth = canvasBackground.width;
 var gameHeight = canvasBackground.height;
+var mouseX = 0;
+var mouseY = 0;
 
 var isPlaying = false;
 var fps = 10;
@@ -35,6 +40,11 @@ imgSprite.addEventListener("load", init, false);
 
 function init() {
   spawnBadGuys(spawnAmount);
+  drawMenu();
+  document.addEventListener('click', mouseClicked, false);
+}
+
+function playGame() {
   drawBackground();
   startLoop();
   document.addEventListener("keydown", checkKeyDown, false);
@@ -56,6 +66,14 @@ function startLoop() {
 
 function stopLoop() {
   isPlaying = false;
+}
+
+function drawMenu() {
+  var sourceX = 0;
+  var sourceY = 760;
+  var drawX = 0;
+  var drawY = 0;
+  contextBackground.drawImage(imgSprite, sourceX, sourceY, gameWidth, gameHeight, drawX, drawY, gameWidth, gameHeight);
 }
 
 function drawBackground() {
@@ -246,6 +264,26 @@ function spawnBadGuys(num) {
   for (var i = 0; i < num; i++) {
     badGuys[badGuys.length] = new BadGuy();
   }
+}
+
+function Button(xL, xR, yT, yB) {
+this.xLeft = xL;
+this.xRight = xR;
+this.yTop = yT;
+this.yBottom = yB;
+}
+
+Button.prototype.wasClicked = function() {
+  if (this.xLeft <= mouseX && this.xRight >= mouseX &&
+      this.yTop <= mouseY && this.yBottom >= mouseY ) {
+    return true;
+}
+}
+
+function mouseClicked(e) {
+  mouseX = e.pageX - canvasBackground.offsetLeft;
+  mouseY = e.pageY - canvasBackground.offsetTop;
+  if (playButton.wasClicked()) playGame();
 }
 
 function checkKeyDown(e) {
