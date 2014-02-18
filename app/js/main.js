@@ -74,7 +74,7 @@ function SuperMe() {
   this.sourceX = 0;
   this.sourceY = 600;
   this.width = 146;
-  this.height = 114;
+  this.height = 111;
   this.speed = 2;
   this.drawX = 0;
   this.drawY = 0;
@@ -121,6 +121,7 @@ SuperMe.prototype.checkDirection = function () {
 SuperMe.prototype.drawBullets = function() {
   for (var i = 0; i < this.bullets.length; i++) {
     if (this.bullets[i].drawX >= 0) this.bullets[i].draw();
+    if (this.bullets[i].explosion.hasHit) this.bullets[i].explosion.draw();
   }
 };
 
@@ -142,15 +143,18 @@ function clearContextSuperMe() {
 function Bullet() {
   this.sourceX = 146;
   this.sourceY = 601;
-  this.width = 62;
-  this.height = 60;
+  this.width = 5;
+  this.height = 5;
   this.drawX = -10;
   this.drawY = 0;
+  this.hasHit = false;
+  this.explosion = new Explosion();
 }
 
 Bullet.prototype.draw = function() {
   this.drawX += 6;
   contextSuperMe.drawImage(imgSprite, this.sourceX, this.sourceY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
+  this.hitBadGuy();
   if (this.drawX > gameWidth) this.recycle();
 };
 
@@ -163,11 +167,48 @@ Bullet.prototype.recycle = function() {
   this.drawX = -10;
 };
 
+Bullet.prototype.hitBadGuy = function() {
+  for (var i = 0; i < badGuys.length; i++) {
+    if (this.drawX >= badGuys[i].drawX && 
+        this.drawX <= badGuys[i].drawX + badGuys[i].width &&
+        this.drawY >= badGuys[i].drawY &&
+        this.drawY <= badGuys[i].drawY + badGuys[i].height) {
+      this.explosion.drawX = badGuys[i].drawX - (this.explosion.width / 2);
+      this.explosion.drawY = badGuys[i].drawY;
+      this.explosion.hasHit = true;
+      this.recycle();
+      badGuys[i].recycleBadGuy();
+    }
+  }
+};
+
+function Explosion() {
+  this.sourceX = 151;
+  this.sourceY = 600;
+  this.width = 106;
+  this.height = 100;
+  this.drawX = 0;
+  this.drawY = 0;
+  this.hasHit = true;
+  this.currentFrame = 0;
+  this.totalFrames = 10;
+}
+
+Explosion.prototype.draw = function() {
+  if(this.currentFrame <= this.totalFrames) {
+    contextSuperMe.drawImage(imgSprite, this.sourceX, this.sourceY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
+    this.currentFrame++;
+  } else {
+    this.hasHit = false;
+    this.currentFrame = 0;
+  }
+};
+
 function BadGuy() {
-  this.sourceX = 0;
-  this.sourceY = 715;
-  this.width = 62;
-  this.height = 60;
+  this.sourceX = 1;
+  this.sourceY = 711;
+  this.width = 40;
+  this.height = 42;
   this.speed = 2;
   this.drawX = Math.floor(Math.random() * 800) + gameWidth;
   this.drawY = Math.floor(Math.random() * (gameHeight - 150));
@@ -181,11 +222,11 @@ BadGuy.prototype.draw = function() {
 
 BadGuy.prototype.checkEscaped = function() {
   if (this.drawX + this.width <= 0) {
-    this.reuseBadGuy();
+    this.recycleBadGuy();
   }
 };
 
-BadGuy.prototype.reuseBadGuy = function() {
+BadGuy.prototype.recycleBadGuy = function() {
   this.drawX = Math.floor(Math.random() * 800) + gameWidth;
   this.drawY = Math.floor(Math.random() * (gameHeight - 150));
 };
