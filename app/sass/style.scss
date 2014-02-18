@@ -2,12 +2,14 @@ body {
   background: #000;
 }
 
-#canvas-background {
+canvas {
   display: block;
+}
+
+#canvas-background {
   margin: 100px auto 0px;
 }
 
-#super-me, #bad-guys {
-  display: block;
+#super-me, #bad-guys, #scoreboard {
   margin: -600px auto 0px;
 }

@@ -1,6 +1,10 @@
-
 var canvasBackground = document.getElementById("canvas-background");
 var contextBackground = canvasBackground.getContext("2d");
+
+var canvasScoreboard = document.getElementById("scoreboard");
+var contextScoreboard = canvasScoreboard.getContext("2d");
+contextScoreboard.fillStyle = "hsla(0, 0%, 0%, 0.5)";
+contextScoreboard.font = "bold 16px helvetica";
 
 var canvasBadGuys = document.getElementById("bad-guys");
 var contextBadGuys = canvasBadGuys.getContext("2d");
@@ -20,8 +24,6 @@ var mouseX = 0;
 var mouseY = 0;
 
 var isPlaying = false;
-var fps = 10;
-var drawInterval;
 
 var requestAnimFrame = (function() {
   return window.requestAnimationFrame ||
@@ -34,9 +36,25 @@ var requestAnimFrame = (function() {
          };
 })();
 
+var backgroundImgWidth = 1600;
+var backgroundDrawX1 = 0;
+var backgroundDrawX2 = backgroundImgWidth;
 var imgSprite = new Image();
+
 imgSprite.src = "images/sprite.png";
 imgSprite.addEventListener("load", init, false);
+
+
+function moveBackground() {
+  backgroundDrawX1 -= 5;
+  backgroundDrawX2 -= 5;
+  if (backgroundDrawX1 <= -backgroundImgWidth) {
+    backgroundDrawX1 = backgroundImgWidth;
+  } else if (backgroundDrawX2 <= -backgroundImgWidth) {
+    backgroundDrawX2 = backgroundImgWidth;
+  }
+  drawBackground();
+}
 
 function init() {
   spawnBadGuys(spawnAmount);
@@ -47,12 +65,14 @@ function init() {
 function playGame() {
   drawBackground();
   startLoop();
+  updateScoreboard();
   document.addEventListener("keydown", checkKeyDown, false);
   document.addEventListener("keyup", checkKeyUp, false);
 }
 
 function loop() {
   if (isPlaying) {
+    moveBackground();
     superMe.draw();
     drawBadGuys();
     requestAnimFrame(loop);
@@ -79,13 +99,17 @@ function drawMenu() {
 function drawBackground() {
   var sourceX = 0;
   var sourceY = 0;
-  var drawX = 0;
   var drawY = 0;
-  contextBackground.drawImage(imgSprite, sourceX, sourceY, gameWidth, gameHeight, drawX, drawY, gameWidth, gameHeight);
+  contextBackground.clearRect(0, 0, gameWidth, gameHeight);
+  contextBackground.drawImage(imgSprite, sourceX, sourceY, backgroundImgWidth, gameHeight, backgroundDrawX1, drawY, backgroundImgWidth, gameHeight);
+  contextBackground.drawImage(imgSprite, sourceX, sourceY, backgroundImgWidth, gameHeight, backgroundDrawX2, drawY, backgroundImgWidth, gameHeight);
 }
 
-function clearContextBackground() {
-  contextBackground.clearRect(0, 0, gameWidth, gameHeight);
+function updateScoreboard() {
+  var drawX = 700;
+  var drawY = 25;
+  contextScoreboard.clearRect(0, 0, gameWidth, gameHeight);
+  contextScoreboard.fillText("Score: " + superMe.score, drawX, drawY);
 }
 
 function SuperMe() {
@@ -103,11 +127,12 @@ function SuperMe() {
   this.isDownKey = false;
   this.isLeftKey = false;
   this.isSpaceBar = false;
+  this.score = 0;
   this.isShooting = false;
   this.bullets = [];
   this.currentBullet = 0;
   for (var i = 0; i < 20; i++) {
-    this.bullets[this.bullets.length] = new Bullet();
+    this.bullets[this.bullets.length] = new Bullet(this);
   }
 }
 
@@ -154,11 +179,16 @@ SuperMe.prototype.checkShooting = function() {
   }
 };
 
+SuperMe.prototype.updateScore = function(points) {
+  this.score += points;
+};
+
 function clearContextSuperMe() {
   contextSuperMe.clearRect(0, 0, gameWidth, gameHeight);
 }
 
-function Bullet() {
+function Bullet(hero) {
+  this.hero = hero;
   this.sourceX = 146;
   this.sourceY = 601;
   this.width = 5;
@@ -196,6 +226,8 @@ Bullet.prototype.hitBadGuy = function() {
       this.explosion.hasHit = true;
       this.recycle();
       badGuys[i].recycleBadGuy();
+      this.hero.updateScore(badGuys[i].pointValue);
+      updateScoreboard();
     }
   }
 };
@@ -230,6 +262,7 @@ function BadGuy() {
   this.speed = 2;
   this.drawX = Math.floor(Math.random() * 800) + gameWidth;
   this.drawY = Math.floor(Math.random() * (gameHeight - 150));
+  this.pointValue = 5;
 }
 
 BadGuy.prototype.draw = function() {
@@ -277,13 +310,15 @@ Button.prototype.wasClicked = function() {
   if (this.xLeft <= mouseX && this.xRight >= mouseX &&
       this.yTop <= mouseY && this.yBottom >= mouseY ) {
     return true;
-}
-}
+  }
+};
 
 function mouseClicked(e) {
   mouseX = e.pageX - canvasBackground.offsetLeft;
   mouseY = e.pageY - canvasBackground.offsetTop;
-  if (playButton.wasClicked()) playGame();
+  if (!isPlaying) {
+    if (playButton.wasClicked()) playGame();
+  }
 }
 
 function checkKeyDown(e) {
