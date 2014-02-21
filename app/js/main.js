@@ -214,7 +214,7 @@ function Bullet(hero) {
 Bullet.prototype.draw = function() {
   this.drawX += 6;
   contextSuperMe.drawImage(imgSprite, this.sourceX, this.sourceY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
-  this.hitBadGuy();
+  this.checkHitBadGuy();
   if (this.drawX > gameWidth) this.recycle();
 };
 
@@ -227,7 +227,7 @@ Bullet.prototype.recycle = function() {
   this.drawX = -10;
 };
 
-Bullet.prototype.hitBadGuy = function() {
+Bullet.prototype.checkHitBadGuy = function() {
   for (var i = 0; i < badGuys.length; i++) {
     if (this.drawX >= badGuys[i].drawX && 
         this.drawX <= badGuys[i].drawX + badGuys[i].width &&
@@ -320,10 +320,11 @@ function PowerUp() {
   this.goingUp = true;
   this.drawX = Math.floor(Math.random() * gameWidth) + gameWidth;
   this.drawY = Math.floor(Math.random() * (gameHeight - drawHeightFloor));
-  this.pointValue = 5;
+  this.pointValue = 50;
 }
 
 PowerUp.prototype.draw = function() {
+  this.checkHitSuperMe();
   this.drawX -= this.speed;
   if (this.goingUp) {
     this.drawY -= this.speed;
@@ -336,9 +337,20 @@ PowerUp.prototype.draw = function() {
      this.goingUp = true;
     }
   }
-
   contextPowerUps.drawImage(imgSprite, this.sourceX, this.sourceY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
   this.checkEscaped();
+};
+
+PowerUp.prototype.checkHitSuperMe = function() {
+  if (this.drawX >= superMe.drawX && 
+      this.drawX <= superMe.drawX + superMe.width &&
+      this.drawY >= superMe.drawY &&
+      this.drawY <= superMe.drawY + superMe.height) {
+      this.recyclePowerUp();
+      superMe.updateScore(this.pointValue);
+      console.log("Awesome");
+      updateScoreboard();
+    }
 };
 
 PowerUp.prototype.checkEscaped = function() {
