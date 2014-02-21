@@ -9,20 +9,26 @@ contextScoreboard.font = "bold 16px helvetica";
 var canvasBadGuys = document.getElementById("bad-guys");
 var contextBadGuys = canvasBadGuys.getContext("2d");
 var badGuys = [];
-var spawnAmount = 5;
+var badGuysAmount = 5;
 var drawHeightFloor = 150;
+
+// var canvasPowerUps = document.getElementById("power-ups");
+// var contextPowerUps = canvasPowerUps.getContext("2d");
+// var powerUps = [];
+// var powerUpsAmount = 2;
 
 var superMe = new SuperMe();
 var canvasSuperMe = document.getElementById("super-me");
 var contextSuperMe = canvasSuperMe.getContext("2d");
 
-// (xLeft, xRight, yTop = yTopMenu - yButtonTop, yBottom = yTopMenu - yButtonBottom)
-var playButton = new Button(259, 545, 292, 428);
-
+var menuSpriteWidth = 800;
 var gameWidth = canvasBackground.width;
 var gameHeight = canvasBackground.height;
 var mouseX = 0;
 var mouseY = 0;
+
+// (xLeft, xRight, yTop = yTopMenu - yButtonTop, yBottom = yTopMenu - yButtonBottom)
+var playButton = new Button((gameWidth/2 - menuSpriteWidth/2) + 259, (gameWidth/2 - menuSpriteWidth/2) + 545, 292, 428);
 
 var isPlaying = false;
 
@@ -58,7 +64,7 @@ function moveBackground() {
 }
 
 function init() {
-  spawnBadGuys(spawnAmount);
+  spawnBadGuys(badGuysAmount);
   drawMenu();
   document.addEventListener('click', mouseClicked, false);
 }
@@ -303,11 +309,56 @@ function spawnBadGuys(num) {
   }
 }
 
+// function PowerUp() {
+//   this.sourceX = 42;
+//   this.sourceY = 711;
+//   this.width = 40;
+//   this.height = 40;
+//   this.speed = 2;
+//   this.drawX = Math.floor(Math.random() * gameWidth) + gameWidth;
+//   this.drawY = Math.floor(Math.random() * (gameHeight - drawHeightFloor));
+//   this.pointValue = 5;
+// }
+
+// PowerUp.prototype.draw = function() {
+//   this.drawX -= this.speed;
+//   contextPowerUps.drawImage(imgSprite, this.sourceX, this.sourceY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
+//   this.checkEscaped();
+// };
+
+// PowerUp.prototype.checkEscaped = function() {
+//   if (this.drawX + this.width <= 0) {
+//     this.recyclePowerUp();
+//   }
+// };
+
+// PowerUp.prototype.recyclePowerUp = function() {
+//   this.drawX = Math.floor(Math.random() * gameWidth) + gameWidth;
+//   this.drawY = Math.floor(Math.random() * (gameHeight - drawHeightFloor));
+// };
+
+// function clearContextPowerUps() {
+//   contextPowerUps.clearRect(0, 0, gameWidth, gameHeight);
+// }
+
+// function drawPowerUps() {
+//   clearContextPowerUps();
+//   for (var i = 0; i < badGuys.length; i++) {
+//     badGuys[i].draw();
+//   }
+// }
+
+// function spawnPowerUps(num) {
+//   for (var i = 0; i < num; i++) {
+//     badGuys[badGuys.length] = new PowerUp();
+//   }
+// }
+
 function Button(xL, xR, yT, yB) {
-this.xLeft = xL;
-this.xRight = xR;
-this.yTop = yT;
-this.yBottom = yB;
+  this.xLeft = xL;
+  this.xRight = xR;
+  this.yTop = yT;
+  this.yBottom = yB;
 }
 
 Button.prototype.wasClicked = function() {
