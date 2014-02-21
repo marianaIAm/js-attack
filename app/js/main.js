@@ -12,10 +12,10 @@ var badGuys = [];
 var badGuysAmount = 5;
 var drawHeightFloor = 150;
 
-// var canvasPowerUps = document.getElementById("power-ups");
-// var contextPowerUps = canvasPowerUps.getContext("2d");
-// var powerUps = [];
-// var powerUpsAmount = 2;
+var canvasPowerUps = document.getElementById("power-ups");
+var contextPowerUps = canvasPowerUps.getContext("2d");
+var powerUps = [];
+var powerUpsAmount = 2;
 
 var superMe = new SuperMe();
 var canvasSuperMe = document.getElementById("super-me");
@@ -65,6 +65,7 @@ function moveBackground() {
 
 function init() {
   spawnBadGuys(badGuysAmount);
+  spawnPowerUps(powerUpsAmount);
   drawMenu();
   document.addEventListener('click', mouseClicked, false);
 }
@@ -82,6 +83,7 @@ function loop() {
     moveBackground();
     superMe.draw();
     drawBadGuys();
+    drawPowerUps();
     requestAnimFrame(loop);
   }
 }
@@ -309,50 +311,50 @@ function spawnBadGuys(num) {
   }
 }
 
-// function PowerUp() {
-//   this.sourceX = 42;
-//   this.sourceY = 711;
-//   this.width = 40;
-//   this.height = 40;
-//   this.speed = 2;
-//   this.drawX = Math.floor(Math.random() * gameWidth) + gameWidth;
-//   this.drawY = Math.floor(Math.random() * (gameHeight - drawHeightFloor));
-//   this.pointValue = 5;
-// }
+function PowerUp() {
+  this.sourceX = 42;
+  this.sourceY = 711;
+  this.width = 40;
+  this.height = 40;
+  this.speed = 3;
+  this.drawX = Math.floor(Math.random() * gameWidth) + gameWidth;
+  this.drawY = Math.floor(Math.random() * (gameHeight - drawHeightFloor));
+  this.pointValue = 5;
+}
 
-// PowerUp.prototype.draw = function() {
-//   this.drawX -= this.speed;
-//   contextPowerUps.drawImage(imgSprite, this.sourceX, this.sourceY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
-//   this.checkEscaped();
-// };
+PowerUp.prototype.draw = function() {
+  this.drawX -= this.speed;
+  contextPowerUps.drawImage(imgSprite, this.sourceX, this.sourceY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
+  this.checkEscaped();
+};
 
-// PowerUp.prototype.checkEscaped = function() {
-//   if (this.drawX + this.width <= 0) {
-//     this.recyclePowerUp();
-//   }
-// };
+PowerUp.prototype.checkEscaped = function() {
+  if (this.drawX + this.width <= 0) {
+    this.recyclePowerUp();
+  }
+};
 
-// PowerUp.prototype.recyclePowerUp = function() {
-//   this.drawX = Math.floor(Math.random() * gameWidth) + gameWidth;
-//   this.drawY = Math.floor(Math.random() * (gameHeight - drawHeightFloor));
-// };
+PowerUp.prototype.recyclePowerUp = function() {
+  this.drawX = Math.floor(Math.random() * gameWidth) + gameWidth;
+  this.drawY = Math.floor(Math.random() * (gameHeight - drawHeightFloor));
+};
 
-// function clearContextPowerUps() {
-//   contextPowerUps.clearRect(0, 0, gameWidth, gameHeight);
-// }
+function clearContextPowerUps() {
+  contextPowerUps.clearRect(0, 0, gameWidth, gameHeight);
+}
 
-// function drawPowerUps() {
-//   clearContextPowerUps();
-//   for (var i = 0; i < badGuys.length; i++) {
-//     badGuys[i].draw();
-//   }
-// }
+function drawPowerUps() {
+  clearContextPowerUps();
+  for (var i = 0; i < powerUps.length; i++) {
+    powerUps[i].draw();
+  }
+}
 
-// function spawnPowerUps(num) {
-//   for (var i = 0; i < num; i++) {
-//     badGuys[badGuys.length] = new PowerUp();
-//   }
-// }
+function spawnPowerUps(num) {
+  for (var i = 0; i < num; i++) {
+    powerUps[powerUps.length] = new PowerUp();
+  }
+}
 
 function Button(xL, xR, yT, yB) {
   this.xLeft = xL;
