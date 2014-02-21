@@ -316,7 +316,8 @@ function PowerUp() {
   this.sourceY = 711;
   this.width = 40;
   this.height = 40;
-  this.speed = 3;
+  this.speed = 4;
+  this.goingUp = true;
   this.drawX = Math.floor(Math.random() * gameWidth) + gameWidth;
   this.drawY = Math.floor(Math.random() * (gameHeight - drawHeightFloor));
   this.pointValue = 5;
@@ -324,6 +325,18 @@ function PowerUp() {
 
 PowerUp.prototype.draw = function() {
   this.drawX -= this.speed;
+  if (this.goingUp) {
+    this.drawY -= this.speed;
+    if (this.drawY <= this.speed) { 
+      this.goingUp = false;
+    }
+  } else {
+    this.drawY += this.speed;
+    if (this.drawY > (gameHeight - drawHeightFloor)) {
+     this.goingUp = true;
+    }
+  }
+
   contextPowerUps.drawImage(imgSprite, this.sourceX, this.sourceY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
   this.checkEscaped();
 };
