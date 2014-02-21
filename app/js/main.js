@@ -90,9 +90,10 @@ function stopLoop() {
 }
 
 function drawMenu() {
+  var menuSpriteWidth = 800;
   var sourceX = 0;
   var sourceY = 760;
-  var drawX = 0;
+  var drawX = gameWidth/2 - menuSpriteWidth/2;
   var drawY = 0;
   contextBackground.drawImage(imgSprite, sourceX, sourceY, gameWidth, gameHeight, drawX, drawY, gameWidth, gameHeight);
 }
