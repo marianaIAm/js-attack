@@ -10,6 +10,7 @@ var canvasBadGuys = document.getElementById("bad-guys");
 var contextBadGuys = canvasBadGuys.getContext("2d");
 var badGuys = [];
 var spawnAmount = 5;
+var drawHeightFloor = 150;
 
 var superMe = new SuperMe();
 var canvasSuperMe = document.getElementById("super-me");
@@ -262,8 +263,8 @@ function BadGuy() {
   this.width = 40;
   this.height = 42;
   this.speed = 2;
-  this.drawX = Math.floor(Math.random() * 1200) + gameWidth;
-  this.drawY = Math.floor(Math.random() * (gameHeight - 150));
+  this.drawX = Math.floor(Math.random() * gameWidth) + gameWidth;
+  this.drawY = Math.floor(Math.random() * (gameHeight - drawHeightFloor));
   this.pointValue = 5;
 }
 
@@ -280,8 +281,8 @@ BadGuy.prototype.checkEscaped = function() {
 };
 
 BadGuy.prototype.recycleBadGuy = function() {
-  this.drawX = Math.floor(Math.random() * 1200) + gameWidth;
-  this.drawY = Math.floor(Math.random() * (gameHeight - 150));
+  this.drawX = Math.floor(Math.random() * gameWidth) + gameWidth;
+  this.drawY = Math.floor(Math.random() * (gameHeight - drawHeightFloor));
 };
 
 function clearContextBadGuys() {
