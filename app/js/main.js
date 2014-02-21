@@ -241,7 +241,7 @@ function Explosion() {
   this.height = 100;
   this.drawX = 0;
   this.drawY = 0;
-  this.hasHit = true;
+  this.hasHit = false;
   this.currentFrame = 0;
   this.totalFrames = 10;
 }
