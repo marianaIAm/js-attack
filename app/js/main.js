@@ -348,7 +348,6 @@ PowerUp.prototype.checkHitSuperMe = function() {
       this.drawY <= superMe.drawY + superMe.height) {
       this.recyclePowerUp();
       superMe.updateScore(this.pointValue);
-      console.log("Awesome");
       updateScoreboard();
     }
 };
